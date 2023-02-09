@@ -20,7 +20,7 @@ pxeBoot
 
 ### run tests on a single server
 
-❯ ./pbnj-tester run --pbnj-addr localhost:50051 --bmc-ip 192.168.1.1 --bmc-user root --bmc-pass hunter2 --tests power-status,power-on
+```❯ ./pbnj-tester run --pbnj-addr localhost:50051 --bmc-ip 192.168.1.1 --bmc-user root --bmc-pass hunter2 --tests power-status,power-on```
 ```json
 [
  {
@@ -46,7 +46,7 @@ This command requires a test configuration, see the [tests.yaml](tests.yaml) for
 
 The tests are executed concurrently and a JSON output is returned.
 
-❯ ./pbnj-tester run-multiple --pbnj-addr localhost:50051 --tests-config tests.yaml
+```❯ ./pbnj-tester run-multiple --pbnj-addr localhost:50051 --tests-config tests.yaml```
 ```json
 [
  {
