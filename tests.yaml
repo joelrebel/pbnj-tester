@@ -1,0 +1,17 @@
+---
+tests:
+ - power-status
+
+servers:
+ - name: foo
+   vendor: ASRockRack
+   model:  ROMED8HM3 EPYC 7402P
+   bmcHost: 192.168.1.1
+   bmcUser: root
+   bmcPass: hunter2
+ - name: bar
+   vendor: 	Super Micro
+   model: SSG-110P-NTR10
+   bmcHost: 192.168.1.2
+   bmcUser: ADMIN
+   bmcPass: hunter2
