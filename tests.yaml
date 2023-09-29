@@ -1,6 +1,7 @@
 ---
 tests:
  - power-status
+ - screenshot
 
 servers:
  - name: foo
