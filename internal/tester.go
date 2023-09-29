@@ -18,11 +18,23 @@ import (
 type TestName string
 
 const (
+	// Adding new new tests
+	// 1. Define a const for the new test here.
+	// 2. Include the new test name in `SupportedActions` below.
+	// 3. Define functions for the tests - see machine_tests.go, bmc_tests.go.
+	// 4. Include the Test name in the initTester() registry map below.
+
+	// power status tests
 	TestPowerStatus TestName = "power-status"
 	TestPowerOn     TestName = "power-on"
 	TestPowerOff    TestName = "power-off"
 	TestPowerCycle  TestName = "power-cycle"
 	TestPxeBoot     TestName = "pxeBoot"
+	// user account tests
+	TestCreateUser TestName = "create-user"
+	TestUpdateUser TestName = "update-user"
+	TestDeleteUser TestName = "delete-user"
+	TestScreenshot TestName = "screenshot"
 )
 
 // Tester runs tests on a host, this struct holds config attributes for tester
@@ -38,7 +50,7 @@ type Tester struct {
 }
 
 // TestFunc should return output if any and an error to indicate test failure.
-type testFunc func(context.Context, *grpc.ClientConn) ([]byte, error)
+type testFunc func(context.Context, *grpc.ClientConn) (string, error)
 
 var (
 	// registry of test functions
@@ -51,12 +63,12 @@ var (
 		string(TestPowerOff),
 		string(TestPowerCycle),
 		string(TestPxeBoot),
+		string(TestCreateUser),
+		string(TestUpdateUser),
+		string(TestDeleteUser),
+		string(TestScreenshot),
 	}
 )
-
-func init() {
-
-}
 
 // test holds attributes for a test executed by Tester
 type test struct {
@@ -90,23 +102,21 @@ func (t *Tester) Run(ctx context.Context, testNames []string) {
 
 	defer conn.Close()
 
-	t.logger.V(2).Info("PBnJ connection successful.")
+	t.logger.V(3).Info("PBnJ connection successful.")
 
 	for _, test := range t.tests {
 		result := Result{TestName: string(test.TestName)}
 
-		t.logger.V(2).Info("running test", "testName", test.TestName)
+		t.logger.V(3).Info("running test", "testName", test.TestName)
 
 		startTime := time.Now()
 
 		output, err := test.TestMethod(ctx, conn)
 		result.Output = output
+		result.Runtime = time.Duration(time.Since(startTime)).String()
 		if err != nil {
-			result.Error = err
-			result.Runtime = time.Since(startTime)
-
-			t.logger.V(2).Info("Test failed: ", test.TestName)
-
+			result.Error = err.Error()
+			t.logger.V(3).Info("Test failed: ", test.TestName)
 			t.results = append(t.results, result)
 			continue
 		}
@@ -114,7 +124,7 @@ func (t *Tester) Run(ctx context.Context, testNames []string) {
 		result.Succeeded = true
 		t.results = append(t.results, result)
 
-		t.logger.V(2).Info("Test successful: ", test.TestName)
+		t.logger.V(3).Info("Test successful: ", test.TestName)
 	}
 }
 
@@ -125,6 +135,10 @@ func (t *Tester) initTester(ctx context.Context, testNames []string) error {
 		TestPowerOff:    t.powerOff,
 		TestPowerCycle:  t.powerCycle,
 		TestPxeBoot:     t.pxeBoot,
+		TestCreateUser:  t.createUser,
+		TestUpdateUser:  t.updateUser,
+		TestDeleteUser:  t.deleteUser,
+		TestScreenshot:  t.screenshot,
 	}
 
 	// init tests to run
@@ -164,10 +178,10 @@ type DeviceResult struct {
 // Result is a single test result
 type Result struct {
 	TestName  string
-	Output    []byte
-	Error     error
+	Output    string
+	Error     string
 	Succeeded bool
-	Runtime   time.Duration
+	Runtime   string
 }
 
 // ResultStore stores test results

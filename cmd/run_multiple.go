@@ -81,9 +81,7 @@ func runMultiple(ctx context.Context) {
 
 	wg.Wait()
 
-	results := resultStore.Read()
-
-	b, err = json.MarshalIndent(results, "", " ")
+	b, err = json.MarshalIndent(resultStore.Read(), "", " ")
 	if err != nil {
 		log.Fatal(err)
 	}

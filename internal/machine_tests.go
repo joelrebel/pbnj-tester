@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (t *Tester) powerStatus(ctx context.Context, conn *grpc.ClientConn) ([]byte, error) {
+func (t *Tester) powerStatus(ctx context.Context, conn *grpc.ClientConn) (string, error) {
 	mc := v1.NewMachineClient(conn)
 	//	bc := v1.NewBMCClient(conn)
 	tc := v1.NewTaskClient(conn)
@@ -31,16 +31,16 @@ func (t *Tester) powerStatus(ctx context.Context, conn *grpc.ClientConn) ([]byte
 		PowerAction: v1.PowerAction_POWER_ACTION_STATUS,
 	})
 	if err != nil {
-		t.logger.Error(err, "error calling")
-		return nil, err
+		t.logger.V(3).Error(err, "power status test error")
+		return "", err
 	}
 
-	t.logger.V(2).Info("resp", "resp", []interface{}{resp})
+	t.logger.V(3).Info("resp", "resp", []interface{}{resp})
 
-	return nil, nil
+	return resp.String(), nil
 }
 
-func (t *Tester) powerOn(ctx context.Context, conn *grpc.ClientConn) ([]byte, error) {
+func (t *Tester) powerOn(ctx context.Context, conn *grpc.ClientConn) (string, error) {
 	mc := v1.NewMachineClient(conn)
 	tc := v1.NewTaskClient(conn)
 
@@ -62,16 +62,17 @@ func (t *Tester) powerOn(ctx context.Context, conn *grpc.ClientConn) ([]byte, er
 		PowerAction: v1.PowerAction_POWER_ACTION_ON,
 	})
 	if err != nil {
-		t.logger.Error(err, "error calling")
-		return nil, err
+		t.logger.Error(err, "power on test error")
+		return "", err
 	}
 
-	t.logger.V(2).Info("resp", "resp", []interface{}{resp})
+	t.logger.V(3).Info("resp", "resp", []interface{}{resp})
 
-	return nil, nil
+	return resp.String(), nil
+
 }
 
-func (t *Tester) powerOff(ctx context.Context, conn *grpc.ClientConn) ([]byte, error) {
+func (t *Tester) powerOff(ctx context.Context, conn *grpc.ClientConn) (string, error) {
 	mc := v1.NewMachineClient(conn)
 	tc := v1.NewTaskClient(conn)
 
@@ -93,20 +94,21 @@ func (t *Tester) powerOff(ctx context.Context, conn *grpc.ClientConn) ([]byte, e
 		PowerAction: v1.PowerAction_POWER_ACTION_OFF,
 	})
 	if err != nil {
-		t.logger.Error(err, "error calling")
-		return nil, err
+		t.logger.Error(err, "power off test error")
+		return "", err
 	}
 
-	t.logger.V(2).Info("resp", "resp", []interface{}{resp})
+	t.logger.V(3).Info("resp", "resp", []interface{}{resp})
 
-	return nil, nil
+	return resp.String(), nil
+
 }
 
-func (t *Tester) pxeBoot(ctx context.Context, conn *grpc.ClientConn) ([]byte, error) {
-	return nil, nil
+func (t *Tester) pxeBoot(ctx context.Context, conn *grpc.ClientConn) (string, error) {
+	return "", nil
 }
 
-func (t *Tester) powerCycle(ctx context.Context, conn *grpc.ClientConn) ([]byte, error) {
+func (t *Tester) powerCycle(ctx context.Context, conn *grpc.ClientConn) (string, error) {
 	mc := v1.NewMachineClient(conn)
 	tc := v1.NewTaskClient(conn)
 
@@ -128,10 +130,10 @@ func (t *Tester) powerCycle(ctx context.Context, conn *grpc.ClientConn) ([]byte,
 		PowerAction: v1.PowerAction_POWER_ACTION_CYCLE,
 	})
 	if err != nil {
-		t.logger.Error(err, "error calling")
-		return nil, err
+		t.logger.Error(err, "power cycle test error")
+		return "", err
 	}
 
-	t.logger.V(2).Info("resp", "resp", []interface{}{resp})
-	return nil, nil
+	t.logger.V(3).Info("resp", "resp", []interface{}{resp})
+	return resp.String(), nil
 }
